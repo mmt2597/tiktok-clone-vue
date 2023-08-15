@@ -48,10 +48,8 @@ let video = ref(null);
 let isLoaded = ref(false);
 
 onMounted(() => {
-	console.log("mounted");
 	if (video.value) {
 		video.value.addEventListener("loadeddata", (e) => {
-			console.log("loadeddata");
 			if (e.target) {
 				setTimeout(() => {
 					isLoaded.value = true;
