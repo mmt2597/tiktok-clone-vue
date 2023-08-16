@@ -41,14 +41,16 @@
 				class="flex items-center justify-end gap-3 min-w-[275px] max-w-[320px] w-full"
 			>
 				<button
+					@click="($event) => isLoggedIn()"
 					class="flex items-center border rounded-sm px-3 py-[6px] hover:bg-gray-100"
 				>
 					<Icon name="mdi:plus" color="#000000"> size="22"</Icon>
 					<span class="px-2 font-medium text-[15px]">Upload</span>
 				</button>
 
-				<div v-if="false" class="flex items-center">
+				<div v-if="!$userStore.id" class="flex items-center">
 					<button
+						@click="($event) => ($generalStore.isLoginOpen = true)"
 						class="flex items-center bg-[#F02C56] text-white border rounded-md px-3 py-[6px]"
 					>
 						<span class="mx-4 font-medium text-[15px]">Log in</span>
@@ -56,7 +58,7 @@
 					<Icon name="mdi:dots-vertical" color="#161724" size="25" />
 				</div>
 
-				<div class="flex items-center">
+				<div v-else class="flex items-center">
 					<Icon
 						class="ml-1 mr-4"
 						name="carbon:send-alt"
@@ -77,7 +79,7 @@
 							<img
 								class="rounded-full"
 								width="33"
-								src="https://picsum.photos/id/83/300/320"
+								:src="$userStore.image"
 							/>
 						</button>
 
@@ -87,6 +89,7 @@
 							class="absolute bg-white rounded-lg py-1.5 w-[200px] shadow-xl border top-[43px] -right-2"
 						>
 							<NuxtLink
+								:to="`/profile/${$userStore.id}`"
 								@click="($event) => (showMenu = false)"
 								class="flex items-center justify-start py-3 px-2 hover:bg-gray-100 cursor-pointer"
 							>
@@ -96,6 +99,7 @@
 								>
 							</NuxtLink>
 							<div
+								@click="($event) => logout()"
 								class="flex items-center justify-start py-3 px-1.5 hover:bg-gray-100 border-t cursor-pointer"
 							>
 								<Icon name="ic:outline-login" size="20" />
@@ -112,6 +116,27 @@
 </template>
 
 <script setup>
+const { $userStore, $generalStore } = useNuxtApp();
+
 const route = useRoute();
+const router = useRouter();
+
 let showMenu = ref(false);
+
+const isLoggedIn = () => {
+	if ($userStore.id) {
+		router.push("/upload");
+	} else {
+		$generalStore.isLoginOpen = true;
+	}
+};
+
+const logout = () => {
+	try {
+		$userStore.logout();
+		router.push("/");
+	} catch (e) {
+		console.log(e);
+	}
+};
 </script>

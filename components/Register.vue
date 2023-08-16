@@ -7,7 +7,7 @@
 			v-model:input="name"
 			inputType="text"
 			:autoFocus="true"
-			error=""
+			:error="errors && errors.name ? errors.name[0] : ''"
 		/>
 	</div>
 
@@ -16,7 +16,7 @@
 			placeholder="Email address"
 			v-model:input="email"
 			inputType="email"
-			error=""
+			:error="errors && errors.email ? errors.email[0] : ''"
 		/>
 	</div>
 
@@ -25,7 +25,7 @@
 			placeholder="Password"
 			v-model:input="password"
 			inputType="password"
-			error=""
+			:error="errors && errors.password ? errors.password[0] : ''"
 		/>
 	</div>
 
@@ -34,7 +34,11 @@
 			placeholder="Confirm Password"
 			v-model:input="confirmPassword"
 			inputType="password"
-			error=""
+			:error="
+				errors && errors.confirmPassword
+					? errors.confirmPassword[0]
+					: ''
+			"
 		/>
 	</div>
 
@@ -56,11 +60,28 @@
 </template>
 
 <script setup>
+const { $userStore, $generalStore } = useNuxtApp();
+
 let name = ref(null);
 let email = ref(null);
 let password = ref(null);
 let confirmPassword = ref(null);
 let errors = ref(null);
 
-const register = () => {};
+const register = async () => {
+	errors.value = null;
+
+	try {
+		await $userStore.getTokens();
+		await $userStore.register(
+			name.value,
+			email.value,
+			password.value,
+			confirmPassword.value
+		);
+	} catch (e) {
+		console.log(e);
+		errors.value = e.response.data.errors;
+	}
+};
 </script>
